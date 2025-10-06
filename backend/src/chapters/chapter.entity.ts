@@ -7,7 +7,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Book } from '../books/book.entity';
-import { Verse } from 'src/verses/verse.entity';
+import { Verse } from '../verses/verse.entity';
 
 @Entity('chapters')
 export class Chapter {

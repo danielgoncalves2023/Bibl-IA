@@ -1,27 +1,41 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import * as jwksRsa from 'jwks-rsa';
 
+export interface Auth0JwtPayload {
+  sub: string;
+  name?: string;
+  email?: string;
+  aud: string | string[];
+  iss: string;
+  iat: number;
+  exp: number;
+  [key: string]: any;
+}
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private configService: ConfigService) {
+    const domain = configService.get<string>('auth0.domain');
+    const audience = configService.get<string>('auth0.audience');
+
     super({
       secretOrKeyProvider: jwksRsa.passportJwtSecret({
         cache: true,
         rateLimit: true,
         jwksRequestsPerMinute: 5,
-        jwksUri: `https://dev-ppu3k1wrmgibvb3x.us.auth0.com/.well-known/jwks.json`,
+        jwksUri: `https://${domain}/.well-known/jwks.json`,
       }),
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      audience: 'https://api.example.com', // mesmo do Auth0 API
-      issuer: `https://dev-ppu3k1wrmgibvb3x.us.auth0.com/`,
+      audience,
+      issuer: `https://${domain}/`,
       algorithms: ['RS256'],
     });
   }
 
-  validate(payload: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  validate(payload: Auth0JwtPayload): Auth0JwtPayload {
     return payload;
   }
 }

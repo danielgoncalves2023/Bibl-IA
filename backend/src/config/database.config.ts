@@ -7,7 +7,7 @@ export const databaseConfig: TypeOrmModuleOptions = {
   username: process.env.DB_USERNAME || 'postgres',
   password: process.env.DB_PASSWORD || 'password',
   database: process.env.DB_NAME || 'projeto_biblia',
-  entities: [__dirname + '/**/*.entity{.ts,.js}'],
-  synchronize: process.env.NODE_ENV !== 'production',
+  autoLoadEntities: true,
+  synchronize: false, // Desabilitado para evitar conflitos
   logging: process.env.NODE_ENV === 'development',
 };

@@ -6,8 +6,8 @@ import {
   OneToMany,
   JoinColumn,
 } from 'typeorm';
-import { Chapter } from 'src/chapters/chapter.entity';
-import { Testament } from 'src/testaments/testament.entity';
+import { Chapter } from '../chapters/chapter.entity';
+import { Testament } from '../testaments/testament.entity';
 
 @Entity('books')
 export class Book {

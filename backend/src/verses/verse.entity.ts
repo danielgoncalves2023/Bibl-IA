@@ -6,8 +6,8 @@ import {
   OneToMany,
   JoinColumn,
 } from 'typeorm';
-import { VerseInteraction } from 'src/verse-interactions/verse-interaction.entity';
-import { Chapter } from 'src/chapters/chapter.entity';
+import { VerseInteraction } from '../verse-interactions/verse-interaction.entity';
+import { Chapter } from '../chapters/chapter.entity';
 
 @Entity('verses')
 export class Verse {

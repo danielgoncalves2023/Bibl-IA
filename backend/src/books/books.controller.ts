@@ -11,21 +11,27 @@ import {
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
+import { Public } from '../auth/public.decorator';
 
 @Controller('books')
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
+  // Rota protegida - requer autenticação
   @Post()
   create(@Body() createBookDto: CreateBookDto) {
     return this.booksService.create(createBookDto);
   }
 
+  // Rota pública - não requer autenticação
+  @Public()
   @Get()
   findAll() {
     return this.booksService.findAll();
   }
 
+  // Rota pública - não requer autenticação
+  @Public()
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.booksService.findOne(id);
