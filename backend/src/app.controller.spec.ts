@@ -1,22 +1,16 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 
-describe('AppController', () => {
-  let appController: AppController;
+@Controller()
+export class AppController {
+  @Get('public')
+  getPublic() {
+    return { message: 'Rota pública' };
+  }
 
-  beforeEach(async () => {
-    const app: TestingModule = await Test.createTestingModule({
-      controllers: [AppController],
-      providers: [AppService],
-    }).compile();
-
-    appController = app.get<AppController>(AppController);
-  });
-
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
-    });
-  });
-});
+  @UseGuards(AuthGuard('jwt'))
+  @Get('private')
+  getPrivate() {
+    return { message: 'Rota protegida com Auth0' };
+  }
+}
