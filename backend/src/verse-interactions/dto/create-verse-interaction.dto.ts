@@ -1,9 +1,8 @@
 export class CreateVerseInteractionDto {
   verse_id: number;
-  is_favorite?: boolean;
-  is_read?: boolean;
+  user_id: string;
+  interaction_type: 'read' | 'favorite' | 'comment' | 'observation';
   comment?: string;
   observation?: string;
   read_at?: Date;
-  user_id?: string;
 }

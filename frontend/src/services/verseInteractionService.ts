@@ -54,20 +54,17 @@ export class VerseInteractionService {
     return response.data;
   }
 
-  async createInteraction(
-    verseId: number,
-    userId: string,
-    interactionType: InteractionType,
-    comment?: string,
-    observation?: string,
-    token?: string
-  ): Promise<VerseInteraction> {
-    const api = this.getApiClient(token!);
-    const response = await api.post<VerseInteraction>('/verse-interactions', {
-      verseId,
-      userId,
-      interactionType,
+  async addComment(verseId: number, userId: string, comment: string, token: string): Promise<VerseInteraction> {
+    const api = this.getApiClient(token);
+    const response = await api.post<VerseInteraction>(`/verse-interactions/verse/${verseId}/user/${userId}/comment`, {
       comment,
+    });
+    return response.data;
+  }
+
+  async addObservation(verseId: number, userId: string, observation: string, token: string): Promise<VerseInteraction> {
+    const api = this.getApiClient(token);
+    const response = await api.post<VerseInteraction>(`/verse-interactions/verse/${verseId}/user/${userId}/observation`, {
       observation,
     });
     return response.data;
@@ -90,15 +87,6 @@ export class VerseInteractionService {
   async deleteInteraction(id: number, token: string): Promise<void> {
     const api = this.getApiClient(token);
     await api.delete(`/verse-interactions/${id}`);
-  }
-
-  // Helper methods for specific actions
-  async addComment(verseId: number, userId: string, comment: string, token: string): Promise<VerseInteraction> {
-    return this.createInteraction(verseId, userId, 'comment', comment, undefined, token);
-  }
-
-  async addObservation(verseId: number, userId: string, observation: string, token: string): Promise<VerseInteraction> {
-    return this.createInteraction(verseId, userId, 'observation', undefined, observation, token);
   }
 
   async updateComment(id: number, comment: string, token: string): Promise<VerseInteraction> {

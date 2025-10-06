@@ -1,8 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { TransformResponseInterceptor } from './common/interceptors/transform-response.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Add global response transformer
+  app.useGlobalInterceptors(new TransformResponseInterceptor());
 
   // Configure CORS before starting the server
   app.enableCors({

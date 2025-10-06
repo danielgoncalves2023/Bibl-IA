@@ -18,11 +18,14 @@ export class VerseInteraction {
   @Column()
   verse_id: number;
 
-  @Column({ default: false })
-  is_favorite: boolean;
+  @Column()
+  user_id: string;
 
-  @Column({ default: false })
-  is_read: boolean;
+  @Column({
+    type: 'enum',
+    enum: ['read', 'favorite', 'comment', 'observation'],
+  })
+  interaction_type: 'read' | 'favorite' | 'comment' | 'observation';
 
   @Column('text', { nullable: true })
   comment: string;
@@ -38,9 +41,6 @@ export class VerseInteraction {
 
   @Column('timestamp', { nullable: true })
   read_at: Date;
-
-  @Column({ nullable: true })
-  user_id: string;
 
   @ManyToOne(() => Verse, (verse) => verse.interactions)
   @JoinColumn({ name: 'verse_id' })

@@ -50,14 +50,14 @@ export class VerseInteractionsService {
 
   async findUserFavorites(userId: string): Promise<VerseInteraction[]> {
     return this.verseInteractionsRepository.find({
-      where: { user_id: userId, is_favorite: true },
+      where: { user_id: userId, interaction_type: 'favorite' },
       relations: ['verse', 'user'],
     });
   }
 
   async findUserReadVerses(userId: string): Promise<VerseInteraction[]> {
     return this.verseInteractionsRepository.find({
-      where: { user_id: userId, is_read: true },
+      where: { user_id: userId, interaction_type: 'read' },
       relations: ['verse', 'user'],
       order: { read_at: 'DESC' },
     });
@@ -80,18 +80,17 @@ export class VerseInteractionsService {
 
   async markAsRead(verseId: number, userId: string): Promise<VerseInteraction> {
     let interaction = await this.verseInteractionsRepository.findOne({
-      where: { verse_id: verseId, user_id: userId },
+      where: { verse_id: verseId, user_id: userId, interaction_type: 'read' },
     });
 
     if (!interaction) {
       interaction = this.verseInteractionsRepository.create({
         verse_id: verseId,
         user_id: userId,
-        is_read: true,
+        interaction_type: 'read',
         read_at: new Date(),
       });
     } else {
-      interaction.is_read = true;
       interaction.read_at = new Date();
     }
 
@@ -103,17 +102,76 @@ export class VerseInteractionsService {
     userId: string,
   ): Promise<VerseInteraction> {
     let interaction = await this.verseInteractionsRepository.findOne({
-      where: { verse_id: verseId, user_id: userId },
+      where: {
+        verse_id: verseId,
+        user_id: userId,
+        interaction_type: 'favorite',
+      },
     });
 
     if (!interaction) {
       interaction = this.verseInteractionsRepository.create({
         verse_id: verseId,
         user_id: userId,
-        is_favorite: true,
+        interaction_type: 'favorite',
+      });
+      return this.verseInteractionsRepository.save(interaction);
+    } else {
+      // Remove favorite (delete the interaction)
+      await this.verseInteractionsRepository.delete(interaction.id);
+      return interaction;
+    }
+  }
+
+  async addComment(
+    verseId: number,
+    userId: string,
+    comment: string,
+  ): Promise<VerseInteraction> {
+    let interaction = await this.verseInteractionsRepository.findOne({
+      where: {
+        verse_id: verseId,
+        user_id: userId,
+        interaction_type: 'comment',
+      },
+    });
+
+    if (!interaction) {
+      interaction = this.verseInteractionsRepository.create({
+        verse_id: verseId,
+        user_id: userId,
+        interaction_type: 'comment',
+        comment,
       });
     } else {
-      interaction.is_favorite = !interaction.is_favorite;
+      interaction.comment = comment;
+    }
+
+    return this.verseInteractionsRepository.save(interaction);
+  }
+
+  async addObservation(
+    verseId: number,
+    userId: string,
+    observation: string,
+  ): Promise<VerseInteraction> {
+    let interaction = await this.verseInteractionsRepository.findOne({
+      where: {
+        verse_id: verseId,
+        user_id: userId,
+        interaction_type: 'observation',
+      },
+    });
+
+    if (!interaction) {
+      interaction = this.verseInteractionsRepository.create({
+        verse_id: verseId,
+        user_id: userId,
+        interaction_type: 'observation',
+        observation,
+      });
+    } else {
+      interaction.observation = observation;
     }
 
     return this.verseInteractionsRepository.save(interaction);

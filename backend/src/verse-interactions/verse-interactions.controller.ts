@@ -69,6 +69,32 @@ export class VerseInteractionsController {
     return this.verseInteractionsService.toggleFavorite(verseId, userId);
   }
 
+  @Post('verse/:verseId/user/:userId/comment')
+  addComment(
+    @Param('verseId', ParseIntPipe) verseId: number,
+    @Param('userId') userId: string,
+    @Body() body: { comment: string },
+  ) {
+    return this.verseInteractionsService.addComment(
+      verseId,
+      userId,
+      body.comment,
+    );
+  }
+
+  @Post('verse/:verseId/user/:userId/observation')
+  addObservation(
+    @Param('verseId', ParseIntPipe) verseId: number,
+    @Param('userId') userId: string,
+    @Body() body: { observation: string },
+  ) {
+    return this.verseInteractionsService.addObservation(
+      verseId,
+      userId,
+      body.observation,
+    );
+  }
+
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
