@@ -1,16 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Testament } from './testament.entity';
 import { CreateTestamentDto } from './dto/create-testament.dto';
 import { UpdateTestamentDto } from './dto/update-testament.dto';
+import { AppDataSource } from '../config/database.config';
 
-@Injectable()
 export class TestamentsService {
-  constructor(
-    @InjectRepository(Testament)
-    private testamentsRepository: Repository<Testament>,
-  ) {}
+  private testamentsRepository: Repository<Testament>;
+
+  constructor() {
+    this.testamentsRepository = AppDataSource.getRepository(Testament);
+  }
 
   async create(createTestamentDto: CreateTestamentDto): Promise<Testament> {
     const testament = this.testamentsRepository.create(createTestamentDto);

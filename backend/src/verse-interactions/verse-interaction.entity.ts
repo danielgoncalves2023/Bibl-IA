@@ -19,7 +19,7 @@ export class VerseInteraction {
   verse_id: number;
 
   @Column()
-  user_id: string;
+  user_id: number;
 
   @Column({
     type: 'enum',
@@ -28,10 +28,7 @@ export class VerseInteraction {
   interaction_type: 'read' | 'favorite' | 'comment' | 'observation';
 
   @Column('text', { nullable: true })
-  comment: string;
-
-  @Column('text', { nullable: true })
-  observation: string;
+  content: string;
 
   @CreateDateColumn()
   created_at: Date;

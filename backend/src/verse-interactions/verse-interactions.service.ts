@@ -1,16 +1,16 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { VerseInteraction } from './verse-interaction.entity';
 import { CreateVerseInteractionDto } from './dto/create-verse-interaction.dto';
 import { UpdateVerseInteractionDto } from './dto/update-verse-interaction.dto';
+import { AppDataSource } from '../config/database.config';
 
-@Injectable()
 export class VerseInteractionsService {
-  constructor(
-    @InjectRepository(VerseInteraction)
-    private verseInteractionsRepository: Repository<VerseInteraction>,
-  ) {}
+  private verseInteractionsRepository: Repository<VerseInteraction>;
+
+  constructor() {
+    this.verseInteractionsRepository =
+      AppDataSource.getRepository(VerseInteraction);
+  }
 
   async create(
     createVerseInteractionDto: CreateVerseInteractionDto,
@@ -34,7 +34,7 @@ export class VerseInteractionsService {
     });
   }
 
-  async findByUser(userId: string): Promise<VerseInteraction[]> {
+  async findByUser(userId: number): Promise<VerseInteraction[]> {
     return this.verseInteractionsRepository.find({
       where: { user_id: userId },
       relations: ['verse', 'user'],
@@ -48,14 +48,14 @@ export class VerseInteractionsService {
     });
   }
 
-  async findUserFavorites(userId: string): Promise<VerseInteraction[]> {
+  async findUserFavorites(userId: number): Promise<VerseInteraction[]> {
     return this.verseInteractionsRepository.find({
       where: { user_id: userId, interaction_type: 'favorite' },
       relations: ['verse', 'user'],
     });
   }
 
-  async findUserReadVerses(userId: string): Promise<VerseInteraction[]> {
+  async findUserReadVerses(userId: number): Promise<VerseInteraction[]> {
     return this.verseInteractionsRepository.find({
       where: { user_id: userId, interaction_type: 'read' },
       relations: ['verse', 'user'],
@@ -78,7 +78,10 @@ export class VerseInteractionsService {
     await this.verseInteractionsRepository.delete(id);
   }
 
-  async markAsRead(verseId: number, userId: string): Promise<VerseInteraction> {
+  async markAsRead(
+    verseId: number,
+    userId: number,
+  ): Promise<VerseInteraction> {
     let interaction = await this.verseInteractionsRepository.findOne({
       where: { verse_id: verseId, user_id: userId, interaction_type: 'read' },
     });
@@ -99,7 +102,7 @@ export class VerseInteractionsService {
 
   async toggleFavorite(
     verseId: number,
-    userId: string,
+    userId: number,
   ): Promise<VerseInteraction> {
     let interaction = await this.verseInteractionsRepository.findOne({
       where: {
@@ -125,7 +128,7 @@ export class VerseInteractionsService {
 
   async addComment(
     verseId: number,
-    userId: string,
+    userId: number,
     comment: string,
   ): Promise<VerseInteraction> {
     let interaction = await this.verseInteractionsRepository.findOne({
@@ -141,10 +144,10 @@ export class VerseInteractionsService {
         verse_id: verseId,
         user_id: userId,
         interaction_type: 'comment',
-        comment,
+        content: comment,
       });
     } else {
-      interaction.comment = comment;
+      interaction.content = comment;
     }
 
     return this.verseInteractionsRepository.save(interaction);
@@ -152,7 +155,7 @@ export class VerseInteractionsService {
 
   async addObservation(
     verseId: number,
-    userId: string,
+    userId: number,
     observation: string,
   ): Promise<VerseInteraction> {
     let interaction = await this.verseInteractionsRepository.findOne({
@@ -168,10 +171,10 @@ export class VerseInteractionsService {
         verse_id: verseId,
         user_id: userId,
         interaction_type: 'observation',
-        observation,
+        content: observation,
       });
     } else {
-      interaction.observation = observation;
+      interaction.content = observation;
     }
 
     return this.verseInteractionsRepository.save(interaction);

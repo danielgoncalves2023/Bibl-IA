@@ -1,16 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Chapter } from './chapter.entity';
 import { CreateChapterDto } from './dto/create-chapter.dto';
 import { UpdateChapterDto } from './dto/update-chapter.dto';
+import { AppDataSource } from '../config/database.config';
 
-@Injectable()
 export class ChaptersService {
-  constructor(
-    @InjectRepository(Chapter)
-    private chaptersRepository: Repository<Chapter>,
-  ) {}
+  private chaptersRepository: Repository<Chapter>;
+
+  constructor() {
+    this.chaptersRepository = AppDataSource.getRepository(Chapter);
+  }
 
   async create(createChapterDto: CreateChapterDto): Promise<Chapter> {
     const chapter = this.chaptersRepository.create(createChapterDto);

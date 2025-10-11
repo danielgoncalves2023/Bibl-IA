@@ -9,7 +9,7 @@ import {
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
-  id!: string;
+  id!: number;
 
   @Column({ unique: true })
   auth0Id!: string; // vem do token (sub)

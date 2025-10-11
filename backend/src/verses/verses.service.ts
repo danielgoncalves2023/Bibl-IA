@@ -1,16 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Verse } from './verse.entity';
 import { CreateVerseDto } from './dto/create-verse.dto';
 import { UpdateVerseDto } from './dto/update-verse.dto';
+import { AppDataSource } from '../config/database.config';
 
-@Injectable()
 export class VersesService {
-  constructor(
-    @InjectRepository(Verse)
-    private versesRepository: Repository<Verse>,
-  ) {}
+  private versesRepository: Repository<Verse>;
+
+  constructor() {
+    this.versesRepository = AppDataSource.getRepository(Verse);
+  }
 
   async create(createVerseDto: CreateVerseDto): Promise<Verse> {
     const verse = this.versesRepository.create(createVerseDto);
